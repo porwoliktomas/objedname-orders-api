@@ -53,31 +53,31 @@ Prerequisites:
 - [jq](https://stedolan.github.io/jq/)
 - [curl](https://curl.se/)
 
-# Login
+### Login
 
 ```bash
 TOKEN=$(curl -XPOST -H "Content-type: application/json" -d '{"username": "test", "password": "test"}' 'http://localhost:3000/auth/login' | jq -r '.access_token')
 ```
 
-# Create a new order
+### Create a new order
 
 ```bash
 curl -XPOST -H "Content-type: application/json" -H "Authorization: Bearer $TOKEN" -d '{"customer": "John Doe", "product": "Test"}' 'http://localhost:3000/orders'
 ```
 
-# Get an order
+### Get an order
 
 ```bash
 curl -H "Authorization: Bearer $TOKEN" 'http://localhost:3000/orders/1'
 ```
 
-# Change the status of an order
+### Change the status of an order
 
 ```bash
 curl -XPOST -H "Content-type: application/json" -H "Authorization: Bearer $TOKEN" -d '{"status": "completed"}' 'http://localhost:3000/orders/1/status'
 ```
 
-# Delete an order
+### Delete an order
 
 ```bash
 curl -XDELETE -H "Authorization: Bearer $TOKEN" 'http://localhost:3000/orders/1'
