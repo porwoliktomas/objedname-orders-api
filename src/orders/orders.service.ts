@@ -1,7 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { Order, OrderInput, OrderStatus } from './order.entity';
+import { Order, OrderStatus } from './order.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -9,7 +10,7 @@ export class OrdersService {
     @InjectRepository(Order) private ordersRepository: Repository<Order>,
   ) {}
 
-  createOrder = async (orderData: OrderInput): Promise<Order> => {
+  createOrder = async (orderData: CreateOrderDto): Promise<Order> => {
     const order = this.ordersRepository.create(orderData);
     return this.ordersRepository.save(order);
   };

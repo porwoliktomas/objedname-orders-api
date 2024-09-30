@@ -2,8 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { OrderInput, OrderStatus } from '../src/orders/order.entity';
+import { OrderStatus } from '../src/orders/order.entity';
 import * as jwt from 'jsonwebtoken';
+import { CreateOrderDto } from 'src/orders/dto/create-order.dto';
 
 describe('OrdersController (e2e)', () => {
   let app: INestApplication;
@@ -37,7 +38,7 @@ describe('OrdersController (e2e)', () => {
   });
 
   it('POST /orders - should create a new order', async () => {
-    const orderData: OrderInput = {
+    const orderData: CreateOrderDto = {
       customer: 'John Doe',
       product: 'Test',
     };
@@ -59,7 +60,7 @@ describe('OrdersController (e2e)', () => {
   });
 
   it('GET /orders/:id - should return an order by id', async () => {
-    const orderData: OrderInput = {
+    const orderData: CreateOrderDto = {
       customer: 'John Doe',
       product: 'Test',
     };
@@ -85,7 +86,7 @@ describe('OrdersController (e2e)', () => {
   });
 
   it('POST /orders/:id/status - should change the order status', async () => {
-    const orderData: OrderInput = {
+    const orderData: CreateOrderDto = {
       customer: 'John Doe',
       product: 'Laptop',
     };
@@ -108,7 +109,7 @@ describe('OrdersController (e2e)', () => {
   });
 
   it('DELETE /orders/:id - should soft delete the order', async () => {
-    const orderData: OrderInput = {
+    const orderData: CreateOrderDto = {
       customer: 'John Doe',
       product: 'Laptop',
     };

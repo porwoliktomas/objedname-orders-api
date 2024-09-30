@@ -4,15 +4,16 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { isOrderStatus, OrderInput } from './order.entity';
 import { AuthGuard } from '../auth/auth.guard';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { GetOrderDto } from './dto/get-order.dto';
+import { ChangeOrderStatusDto } from './dto/change-order-status.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -21,35 +22,34 @@ export class OrdersController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  createOrder(@Body() orderData: OrderInput) {
+  createOrder(@Body() orderData: CreateOrderDto) {
     return this.ordersService.createOrder(orderData);
   }
 
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get(':id')
-  getOrderById(@Param('id') orderId: number) {
-    return this.ordersService.getOrderById(orderId);
+  getOrderById(@Param() params: GetOrderDto) {
+    return this.ordersService.getOrderById(params.id);
   }
 
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post(':id/status')
   changeOrderStatus(
-    @Param('id') orderId: number,
-    @Body('status') newStatus: string,
+    @Param() params: GetOrderDto,
+    @Body() changeOrderStatusData: ChangeOrderStatusDto,
   ) {
-    if (!isOrderStatus(newStatus)) {
-      throw new HttpException('Invalid status', HttpStatus.BAD_REQUEST);
-    }
-
-    return this.ordersService.changeOrderStatus(orderId, newStatus);
+    return this.ordersService.changeOrderStatus(
+      params.id,
+      changeOrderStatusData.status,
+    );
   }
 
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @Delete(':id')
-  deleteOrder(@Param('id') orderId: number) {
-    return this.ordersService.deleteOrder(orderId);
+  deleteOrder(@Param() params: GetOrderDto) {
+    return this.ordersService.deleteOrder(params.id);
   }
 }

@@ -2,8 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrdersService } from './orders.service';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Order, OrderInput, OrderStatus } from './order.entity';
+import { Order, OrderStatus } from './order.entity';
 import { HttpException } from '@nestjs/common';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 const mockRepository = () => ({
   create: jest.fn(),
@@ -32,7 +33,10 @@ describe('OrdersService', () => {
 
   describe('createOrder', () => {
     it('should create and save a new order', async () => {
-      const orderInput: OrderInput = { customer: 'John Doe', product: 'Test' };
+      const orderInput: CreateOrderDto = {
+        customer: 'John Doe',
+        product: 'Test',
+      };
       const savedOrder: Order = {
         ...orderInput,
         id: 1,

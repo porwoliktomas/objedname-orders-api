@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
-import { Order, OrderInput, OrderStatus } from './order.entity';
-import { HttpException } from '@nestjs/common';
+import { Order, OrderStatus } from './order.entity';
 import { AuthModule } from '../auth/auth.module';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 const mockOrdersService = () => ({
   createOrder: jest.fn(),
@@ -34,7 +34,7 @@ describe('OrdersController', () => {
 
   describe('createOrder', () => {
     it('should create an order', async () => {
-      const orderInput: OrderInput = {
+      const orderInput: CreateOrderDto = {
         customer: 'John Doe',
         product: 'Test',
       };
@@ -66,7 +66,7 @@ describe('OrdersController', () => {
 
       (service.getOrderById as jest.Mock).mockResolvedValue(order);
 
-      const result = await controller.getOrderById(1);
+      const result = await controller.getOrderById({ id: 1 });
 
       expect(service.getOrderById).toHaveBeenCalledWith(1);
       expect(result).toEqual(order);
@@ -89,16 +89,13 @@ describe('OrdersController', () => {
         status: newStatus,
       });
 
-      const result = await controller.changeOrderStatus(1, newStatus);
+      const result = await controller.changeOrderStatus(
+        { id: 1 },
+        { status: newStatus },
+      );
 
       expect(service.changeOrderStatus).toHaveBeenCalledWith(1, newStatus);
       expect(result.status).toEqual(newStatus);
-    });
-
-    it('should throw an error for an invalid status', () => {
-      expect(() => {
-        controller.changeOrderStatus(1, 'invalidStatus');
-      }).toThrow(HttpException);
     });
   });
 
@@ -106,7 +103,7 @@ describe('OrdersController', () => {
     it('should delete an order', async () => {
       (service.deleteOrder as jest.Mock).mockResolvedValue(undefined);
 
-      const result = await controller.deleteOrder(1);
+      const result = await controller.deleteOrder({ id: 1 });
 
       expect(service.deleteOrder).toHaveBeenCalledWith(1);
       expect(result).toBeUndefined();

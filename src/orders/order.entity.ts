@@ -7,9 +7,6 @@ export enum OrderStatus {
   CANCELLED = 'cancelled',
 }
 
-export const isOrderStatus = (status: string): status is OrderStatus =>
-  Object.values(OrderStatus).includes(status as OrderStatus);
-
 @Entity()
 export class Order {
   @PrimaryGeneratedColumn()
@@ -27,5 +24,3 @@ export class Order {
   @Column({ default: false })
   isDeleted: boolean;
 }
-
-export type OrderInput = Pick<Order, 'customer' | 'product'>;
