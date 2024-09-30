@@ -3,9 +3,23 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { OrderInput, OrderStatus } from '../src/orders/order.entity';
+import * as jwt from 'jsonwebtoken';
 
 describe('OrdersController (e2e)', () => {
   let app: INestApplication;
+  let token: string;
+
+  const login = async (app: INestApplication) => {
+    const response = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ username: 'test', password: 'test' })
+      .expect(200);
+
+    const decodedToken = jwt.decode(response.body.access_token);
+    expect(decodedToken).toHaveProperty('custom', 'something');
+
+    return response.body.access_token;
+  };
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -14,6 +28,8 @@ describe('OrdersController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+
+    token = await login(app);
   });
 
   afterEach(async () => {
@@ -28,6 +44,7 @@ describe('OrdersController (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .post('/orders')
+      .set('Authorization', `Bearer ${token}`)
       .send(orderData)
       .expect(201);
 
@@ -49,11 +66,13 @@ describe('OrdersController (e2e)', () => {
 
     const { body: createdOrder } = await request(app.getHttpServer())
       .post('/orders')
+      .set('Authorization', `Bearer ${token}`)
       .send(orderData)
       .expect(201);
 
     const { body: fetchedOrder } = await request(app.getHttpServer())
       .get(`/orders/${createdOrder.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
     expect(fetchedOrder).toEqual(
@@ -73,6 +92,7 @@ describe('OrdersController (e2e)', () => {
 
     const { body: createdOrder } = await request(app.getHttpServer())
       .post('/orders')
+      .set('Authorization', `Bearer ${token}`)
       .send(orderData)
       .expect(201);
 
@@ -80,8 +100,9 @@ describe('OrdersController (e2e)', () => {
 
     const { body: updatedOrder } = await request(app.getHttpServer())
       .post(`/orders/${createdOrder.id}/status`)
+      .set('Authorization', `Bearer ${token}`)
       .send({ status: newStatus })
-      .expect(201);
+      .expect(200);
 
     expect(updatedOrder.status).toEqual(newStatus);
   });
@@ -94,15 +115,18 @@ describe('OrdersController (e2e)', () => {
 
     const { body: createdOrder } = await request(app.getHttpServer())
       .post('/orders')
+      .set('Authorization', `Bearer ${token}`)
       .send(orderData)
       .expect(201);
 
     await request(app.getHttpServer())
       .delete(`/orders/${createdOrder.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
     await request(app.getHttpServer())
       .get(`/orders/${createdOrder.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(404);
   });
 });

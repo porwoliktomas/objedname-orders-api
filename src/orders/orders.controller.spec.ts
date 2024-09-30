@@ -3,6 +3,7 @@ import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
 import { Order, OrderInput, OrderStatus } from './order.entity';
 import { HttpException } from '@nestjs/common';
+import { AuthModule } from '../auth/auth.module';
 
 const mockOrdersService = () => ({
   createOrder: jest.fn(),
@@ -17,6 +18,7 @@ describe('OrdersController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [AuthModule],
       controllers: [OrdersController],
       providers: [
         {
