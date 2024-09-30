@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { OrderInput, OrderStatus } from '../src/orders/order.entity';
+import * as jwt from 'jsonwebtoken';
 
 describe('OrdersController (e2e)', () => {
   let app: INestApplication;
@@ -13,6 +14,9 @@ describe('OrdersController (e2e)', () => {
       .post('/auth/login')
       .send({ username: 'test', password: 'test' })
       .expect(200);
+
+    const decodedToken = jwt.decode(response.body.access_token);
+    expect(decodedToken).toHaveProperty('custom', 'something');
 
     return response.body.access_token;
   };
